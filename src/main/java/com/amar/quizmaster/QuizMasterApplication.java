@@ -1,13 +1,12 @@
 package com.amar.quizmaster;
 
+import com.vaadin.flow.component.page.AppShellConfigurator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class QuizMasterApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(QuizMasterApplication.class, args);
-	}
-
+public class QuizMasterApplication implements AppShellConfigurator {
+    public static void main(String[] args) {
+        SpringApplication.run(QuizMasterApplication.class, args);
+    }
 }
