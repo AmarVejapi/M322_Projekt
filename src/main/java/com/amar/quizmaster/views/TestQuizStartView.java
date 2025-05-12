@@ -16,22 +16,27 @@ import com.vaadin.flow.router.Route;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
+
 @Route(value = "TestQuizStart", layout = MainLayout.class)
 @PageTitle("TestQuizStart")
 public class TestQuizStartView extends VerticalLayout {
 
+    private final QuizRepository quizRepository;
+
     private final List<Quiz> allQuizzes;
     private final VirtualList<Quiz> quizList;
 
-    public TestQuizStartView(QuizRepository quizRepository) {
+    public TestQuizStartView(final QuizRepository quizRepository) {
+        this.quizRepository = requireNonNull(quizRepository);
 
         setHeightFull();
 
         allQuizzes = quizRepository.findByType(QuizType.TESTQUIZ);
 
-        H1 title = new H1("Test Quiz Übersicht");
+        var title = new H1("Test Quiz Übersicht");
 
-        TextField searchField = new TextField();
+        var searchField = new TextField();
         searchField.setPlaceholder("Quiz suchen...");
         searchField.addValueChangeListener(event -> filterQuizzes(event.getValue()));
 
@@ -44,7 +49,7 @@ public class TestQuizStartView extends VerticalLayout {
     }
 
     private VerticalLayout createQuizLayout(Quiz quiz) {
-        VerticalLayout layout = new VerticalLayout();
+        var layout = new VerticalLayout();
 
         layout.getStyle()
                 .setBackgroundColor("lightgray")

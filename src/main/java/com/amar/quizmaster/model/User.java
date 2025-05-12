@@ -2,6 +2,8 @@ package com.amar.quizmaster.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -16,7 +18,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User() {}
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Leaderboard> leaderboards;
+
+    public User() {
+    }
 
     public User(String username, String password, Role role) {
         this.username = username;
@@ -54,5 +60,9 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public List<Leaderboard> getLeaderboards() {
+        return leaderboards;
     }
 }

@@ -11,29 +11,32 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 @Route(value = "QuizOverview", layout = MainLayout.class)
 @PageTitle("Quiz Übersicht")
 public class LernQuizStartView extends VerticalLayout {
 
+    private final QuizRepository quizRepository;
+
     private final List<Quiz> allQuizzes;
     private final VirtualList<Quiz> quizList;
 
-    public LernQuizStartView(QuizRepository quizRepository) {
+    public LernQuizStartView(final QuizRepository quizRepository) {
+        this.quizRepository = requireNonNull(quizRepository);
 
         setHeightFull();
 
         allQuizzes = quizRepository.findByType(QuizType.LERNQUIZ);
 
-        H1 title = new H1("Quiz Übersicht");
+        var title = new H1("Quiz Übersicht");
 
-        TextField searchField = new TextField();
+        var searchField = new TextField();
         searchField.setPlaceholder("Quiz suchen...");
         searchField.addValueChangeListener(event -> filterQuizzes(event.getValue()));
 
@@ -46,7 +49,7 @@ public class LernQuizStartView extends VerticalLayout {
     }
 
     private VerticalLayout createQuizLayout(Quiz quiz) {
-        VerticalLayout layout = new VerticalLayout();
+        var layout = new VerticalLayout();
 
         layout.getStyle()
                 .setBackgroundColor("lightgray")

@@ -8,6 +8,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -16,11 +19,12 @@ public class DataInitializer implements CommandLineRunner {
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
 
-    public DataInitializer(final QuestionRepository questionRepository, final QuizRepository quizRepository,
+    public DataInitializer(final QuestionRepository questionRepository,
+                           final QuizRepository quizRepository,
                            final UserRepository userRepository) {
-        this.questionRepository = questionRepository;
-        this.quizRepository = quizRepository;
-        this.userRepository = userRepository;
+        this.questionRepository = requireNonNull(questionRepository);
+        this.quizRepository = requireNonNull(quizRepository);
+        this.userRepository = requireNonNull(userRepository);
     }
 
     @Override

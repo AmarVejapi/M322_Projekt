@@ -9,12 +9,16 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @Route(value = "TestQuiz", layout = MainLayout.class)
 @PageTitle("TestQuiz")
@@ -30,9 +34,10 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
     private int questionIndex = 0;
     private List<Question> questions;
 
-    public TestQuizView(QuestionRepository questionRepository, QuizRepository quizRepository) {
-        this.questionRepository = questionRepository;
-        this.quizRepository = quizRepository;
+    public TestQuizView(final QuestionRepository questionRepository,
+                        final QuizRepository quizRepository) {
+        this.questionRepository = requireNonNull(questionRepository);
+        this.quizRepository = requireNonNull(quizRepository);
 
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setPadding(true);
@@ -57,14 +62,14 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         titleLabel.getStyle()
                 .setFontSize("24px")
                 .setFontWeight("bold")
-                .set("text-align", "center");
+                .setTextAlign(Style.TextAlign.CENTER);
         scoreLabel.setText("Punktestand: " + score);
 
         if (!questions.isEmpty()) {
             questionLabel.setText(questions.get(questionIndex).getText());
             questionLabel.getStyle()
                     .setFontSize("20px")
-                    .set("text-align", "center");
+                    .setTextAlign(Style.TextAlign.CENTER);
             loadQuestionButtons();
         } else {
             questionLabel.setText("Keine Fragen in diesem Quiz.");
@@ -98,10 +103,10 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
 
         if (selectedAnswer == currentQuestion.getCorrectAnswerIndex()) {
             score++;
-            Notification.show("Richtig! Punktestand: " + score, 3000, Notification.Position.MIDDLE);
+            Notification.show("Richtig! Punktestand: " + score, 2000, Notification.Position.MIDDLE);
         } else {
             Notification.show("Falsch! Die richtige Antwort war: " +
-                    currentQuestion.getOptions().get(currentQuestion.getCorrectAnswerIndex()), 3000, Notification.Position.MIDDLE);
+                    currentQuestion.getOptions().get(currentQuestion.getCorrectAnswerIndex()), 2000, Notification.Position.MIDDLE);
         }
 
         questionIndex++;

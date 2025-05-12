@@ -18,7 +18,6 @@ public class Question {
     private int correctAnswerIndex;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
     public Question() {

@@ -15,6 +15,8 @@ import com.vaadin.flow.router.RouterLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import static java.util.Objects.requireNonNull;
+
 @Route("register")
 @PageTitle("Registrierung")
 public class RegisterView extends VerticalLayout {
@@ -23,31 +25,31 @@ public class RegisterView extends VerticalLayout {
 
     @Autowired
     public RegisterView(final UserRepository userRepository) {
-        this.userRepository = userRepository;
+        this.userRepository = requireNonNull(userRepository);
 
-        H1 title = new H1("Registrieren");
+        var title = new H1("Registrieren");
 
-        TextField usernameField = new TextField("Username");
+        var usernameField = new TextField("Username");
         usernameField.setWidth("300px");
 
-        PasswordField passwordField = new PasswordField("Password");
+        var passwordField = new PasswordField("Password");
         passwordField.setWidth("300px");
 
-        PasswordField confirmPasswordField = new PasswordField("Passwort wiederholen");
+        var confirmPasswordField = new PasswordField("Passwort wiederholen");
         confirmPasswordField.setWidth("300px");
 
-        Button registerButton = new Button("Registrieren");
+        var registerButton = new Button("Registrieren");
         registerButton.getStyle().setBackgroundColor("#007bff").setColor("white");
 
-        Span message = new Span();
+        var message = new Span();
         message.setVisible(false);
 
         registerButton.addClickListener(e -> registerUser(usernameField, passwordField, confirmPasswordField, message));
 
-        Span loginText = new Span("Schon ein Konto?");
+        var loginText = new Span("Schon ein Konto?");
         loginText.getStyle().setColor("#555").setFontSize("14px").setMarginRight("5px");
 
-        VerticalLayout formLayout = new VerticalLayout(
+        var formLayout = new VerticalLayout(
                 title,
                 usernameField,
                 passwordField,
@@ -83,7 +85,7 @@ public class RegisterView extends VerticalLayout {
             message.getStyle().setColor("red");
             message.setVisible(true);
         } else {
-            User newUser = new User(username, password, Role.USER);
+            var newUser = new User(username, password, Role.USER);
             userRepository.save(newUser);
 
             message.setText("Registrierung erfolgreich! Du kannst dich jetzt einloggen.");

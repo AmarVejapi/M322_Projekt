@@ -39,14 +39,12 @@ public class MainLayout extends AppLayout {
         var homeLink = new RouterLink("Home", MainView.class);
         var lernQuizLink = new RouterLink("Lern-Quiz", LernQuizStartView.class);
         var testQuizLink = new RouterLink("Test-Quiz", TestQuizStartView.class);
-        var bestenlisteLink = new RouterLink("Bestenliste", BestenlisteView.class);
         var adminBereichLink = new RouterLink("Admin-Bereich", AdminOverviewView.class);
 
         var menuLayout = new VerticalLayout(
                 homeLink,
                 lernQuizLink,
                 testQuizLink,
-                bestenlisteLink,
                 adminBereichLink
         );
 

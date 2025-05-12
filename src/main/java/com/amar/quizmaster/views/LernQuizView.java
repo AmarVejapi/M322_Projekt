@@ -1,20 +1,29 @@
 package com.amar.quizmaster.views;
 
+import com.amar.quizmaster.model.Leaderboard;
 import com.amar.quizmaster.model.Question;
 import com.amar.quizmaster.model.Quiz;
+import com.amar.quizmaster.model.User;
+import com.amar.quizmaster.repositories.LeaderboardRepository;
 import com.amar.quizmaster.repositories.QuestionRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Route(value = "LernQuiz", layout = MainLayout.class)
 @PageTitle("LernQuiz")
@@ -22,17 +31,26 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
 
     private final QuestionRepository questionRepository;
     private final QuizRepository quizRepository;
+    private final LeaderboardRepository leaderboardRepository;
+
     private final H1 titleLabel = new H1();
     private final H1 questionLabel = new H1();
     private final Span scoreLabel = new Span();
 
     private int score = 0;
     private int questionIndex = 0;
-    private List<Question> questions;
+    private long quizStartTime;
+    private List<Question> questions = new ArrayList<>();
+    private Quiz currentQuiz;
+    private final List<Button> currentButtons = new ArrayList<>();
 
-    public LernQuizView(QuestionRepository questionRepository, QuizRepository quizRepository) {
-        this.questionRepository = questionRepository;
-        this.quizRepository = quizRepository;
+    public LernQuizView(
+            final QuestionRepository questionRepository,
+            final QuizRepository quizRepository,
+            final LeaderboardRepository leaderboardRepository) {
+        this.questionRepository = Objects.requireNonNull(questionRepository);
+        this.quizRepository = Objects.requireNonNull(quizRepository);
+        this.leaderboardRepository = Objects.requireNonNull(leaderboardRepository);
 
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setPadding(true);
@@ -49,35 +67,52 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
 
     @Override
     public void setParameter(BeforeEvent event, Long quizId) {
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new IllegalArgumentException("Quiz nicht gefunden"));
+        currentQuiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Quiz nicht gefunden"));
+
         this.questions = questionRepository.findByQuizId(quizId);
 
-        titleLabel.setText(quiz.getTitle());
+        if (questions.isEmpty()) {
+            LoggerFactory.getLogger(getClass()).warn("Quiz {} hat keine Fragen!", quizId);
+            questionLabel.setText("Keine Fragen in diesem Quiz.");
+            return;
+        }
+
+        quizStartTime = System.currentTimeMillis();
+
+        titleLabel.setText(currentQuiz.getTitle());
         titleLabel.getStyle()
                 .setFontSize("24px")
                 .setFontWeight("bold")
-                .set("text-align", "center");
+                .setTextAlign(Style.TextAlign.CENTER);
+
         scoreLabel.setText("Punktestand: " + score);
 
-        if (!questions.isEmpty()) {
-            questionLabel.setText(questions.get(questionIndex).getText());
-            questionLabel.getStyle()
-                    .setFontSize("20px")
-                    .set("text-align", "center");
-            loadQuestionButtons();
-        } else {
-            questionLabel.setText("Keine Fragen in diesem Quiz.");
-        }
+        questionLabel.getStyle()
+                .setFontSize("20px")
+                .setTextAlign(Style.TextAlign.CENTER);
+
+        loadNextQuestion();
     }
 
-    private void loadQuestionButtons() {
+    private void loadNextQuestion() {
+        questionLabel.setText(questions.get(questionIndex).getText());
+
+        currentButtons.forEach(this::remove);
+        currentButtons.clear();
+
         Question currentQuestion = questions.get(questionIndex);
+        List<String> options = currentQuestion.getOptions();
 
-        getChildren().filter(component -> component instanceof Button).forEach(this::remove);
+        for (int i = 0; i < options.size(); i++) {
+            final int index = i;
+            String option = options.get(i);
 
-        currentQuestion.getOptions().forEach(option -> {
-            Button answerButton = new Button(option, event -> checkAnswer(currentQuestion.getOptions().indexOf(option)));
+            var answerButton = new Button(option);
+            answerButton.addClickListener(click -> {
+                disableAllButtons();
+                checkAnswer(index, answerButton);
+            });
+
             answerButton.getStyle()
                     .setWidth("300px")
                     .setMargin("10px 0")
@@ -88,40 +123,100 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
                     .setBorderRadius("5px")
                     .setFontSize("16px")
                     .setCursor("pointer");
-            answerButton.addClickListener(click -> answerButton.getStyle().setBackgroundColor("#0056b3"));
+
             add(answerButton);
-        });
+            currentButtons.add(answerButton);
+        }
     }
 
-    private void checkAnswer(int selectedAnswer) {
+    private void disableAllButtons() {
+        currentButtons.forEach(button -> button.setEnabled(false));
+    }
+
+    private void checkAnswer(int selectedAnswer, Button answerButton) {
         Question currentQuestion = questions.get(questionIndex);
 
         if (selectedAnswer == currentQuestion.getCorrectAnswerIndex()) {
             score++;
-            Notification.show("Richtig! Punktestand: " + score, 3000, Notification.Position.MIDDLE);
+            Notification.show("Richtig! Punktestand: " + score, 2000, Notification.Position.MIDDLE);
         } else {
             Notification.show("Falsch! Die richtige Antwort war: " +
-                    currentQuestion.getOptions().get(currentQuestion.getCorrectAnswerIndex()), 3000, Notification.Position.MIDDLE);
+                    currentQuestion.getOptions().get(currentQuestion.getCorrectAnswerIndex()), 2000, Notification.Position.MIDDLE);
         }
 
         questionIndex++;
         scoreLabel.setText("Punktestand: " + score);
 
-        if (questionIndex < questions.size()) {
-            loadNextQuestion();
-        } else {
-            endQuiz();
-        }
-    }
-
-    private void loadNextQuestion() {
-        questionLabel.setText(questions.get(questionIndex).getText());
-        loadQuestionButtons();
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                getUI().ifPresent(ui -> ui.access(() -> {
+                    if (questionIndex < questions.size()) {
+                        loadNextQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
     }
 
     private void endQuiz() {
         removeAll();
-        add(new H1("Quiz beendet!"));
-        add(new H1("Dein Punktestand: " + score));
+        long quizEndTime = System.currentTimeMillis();
+        long durationInSeconds = (quizEndTime - quizStartTime) / 1000;
+
+        var resultInfo = new Span("Dein Punktestand: " + score + " Punkte");
+        var timeInfo = new Span("Benötigte Zeit: " + durationInSeconds + " Sekunden");
+        resultInfo.getStyle().set("margin", "10px 0").set("font-size", "18px");
+        timeInfo.getStyle().set("margin", "10px 0").set("font-size", "18px");
+
+        add(resultInfo, timeInfo);
+
+        saveLeaderboardEntry(durationInSeconds);
+        showLeaderboard();
+    }
+
+    private void saveLeaderboardEntry(long durationInSeconds) {
+        User currentUser = LoginView.currentUser;
+
+        if (currentUser == null) {
+            LoggerFactory.getLogger(getClass()).warn("Kein Benutzer gefunden. Leaderboard-Eintrag wird nicht gespeichert.");
+            return;
+        }
+
+        var entry = new Leaderboard();
+        entry.setScore(score);
+        entry.setTime(durationInSeconds);
+        entry.setQuizTitle(currentQuiz.getTitle());
+        entry.setCompletedAt(LocalDateTime.now());
+        entry.setUser(currentUser);
+
+        leaderboardRepository.save(entry);
+    }
+
+    private void showLeaderboard() {
+        var leaderboardTitle = new H1("Bestenliste");
+        leaderboardTitle.getStyle().setMargin("20px 0").setTextAlign(Style.TextAlign.CENTER);
+
+        Grid<Leaderboard> leaderboardGrid = new Grid<>(Leaderboard.class, false);
+        leaderboardGrid.addColumn(Leaderboard::getUsername).setHeader("Benutzer").setSortable(true);
+        leaderboardGrid.addColumn(Leaderboard::getScore).setHeader("Punktzahl").setSortable(true);
+        leaderboardGrid.addColumn(Leaderboard::getTime).setHeader("Zeit (s)").setSortable(true);
+        leaderboardGrid.addColumn(Leaderboard::getCompletedAt).setHeader("Abgeschlossen am").setSortable(true);
+
+        leaderboardGrid.setWidthFull();
+
+        List<Leaderboard> leaderboardData = leaderboardRepository.findTop25ByQuizTitleOrderByScoreDesc(currentQuiz.getTitle());
+        if (!leaderboardData.isEmpty()) {
+            leaderboardGrid.setItems(leaderboardData);
+            add(leaderboardTitle, leaderboardGrid);
+        } else {
+            Span noData = new Span("Noch keine Einträge in der Bestenliste für dieses Quiz.");
+            noData.getStyle().setTextAlign(Style.TextAlign.CENTER).setMargin("10px 0");
+            add(leaderboardTitle, noData);
+        }
     }
 }
