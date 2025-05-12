@@ -1,6 +1,7 @@
 package com.amar.quizmaster.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Quiz {
@@ -9,23 +10,27 @@ public class Quiz {
     private Long id;
 
     private String title;
-
     private String description;
 
     @Enumerated(EnumType.STRING)
     private QuizType type;
 
-    /// Konstruktoren
+    @Enumerated(EnumType.STRING)
+    private Difficulty difficulty;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions;
+
     public Quiz() {
     }
 
-    public Quiz(String title, String description, QuizType type) {
+    public Quiz(String title, String description, QuizType type, Difficulty difficulty) {
         this.title = title;
         this.description = description;
         this.type = type;
+        this.difficulty = difficulty;
     }
 
-    /// Getter und Setter
     public Long getId() {
         return id;
     }
@@ -56,5 +61,21 @@ public class Quiz {
 
     public void setType(QuizType type) {
         this.type = type;
+    }
+
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }

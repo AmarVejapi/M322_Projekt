@@ -16,7 +16,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    /// Konstruktoren
     public User() {}
 
     public User(String username, String password, Role role) {
@@ -25,7 +24,6 @@ public class User {
         this.role = role;
     }
 
-    /// Getter und Setter
     public Long getId() {
         return id;
     }
