@@ -4,76 +4,69 @@ import com.amar.quizmaster.model.Quiz;
 import com.amar.quizmaster.model.QuizType;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.virtuallist.VirtualList;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
-@Route(value = "TestQuizStart", layout = MainLayout.class)
-@PageTitle("TestQuizStart")
+@Route(value = "TestQuizOverview", layout = MainLayout.class)
+@PageTitle("Test Quiz Übersicht")
 public class TestQuizStartView extends VerticalLayout {
 
     private final QuizRepository quizRepository;
-
-    private final List<Quiz> allQuizzes;
-    private final VirtualList<Quiz> quizList;
 
     public TestQuizStartView(final QuizRepository quizRepository) {
         this.quizRepository = requireNonNull(quizRepository);
 
         setHeightFull();
 
-        allQuizzes = quizRepository.findByType(QuizType.TESTQUIZ);
+        var codeField = new TextField();
+        codeField.setPlaceholder("Code eingeben ...");
+        codeField.setTooltipText("Bitte gib den Zugriffs-Code für das Test Quiz ein:");
 
-        var title = new H1("Test Quiz Übersicht");
+        var submitButton = new Button("Quiz starten", event -> {
+            String code = codeField.getValue();
+            if (validateCode(code)) {
+                navigateToTestQuiz(code);
+            } else {
+                Notification.show("Ungültiger Code. Bitte versuche es erneut.",
+                        3000, Notification.Position.MIDDLE);
+            }
+        });
 
-        var searchField = new TextField();
-        searchField.setPlaceholder("Quiz suchen...");
-        searchField.addValueChangeListener(event -> filterQuizzes(event.getValue()));
-
-        quizList = new VirtualList<>();
-        quizList.setItems(allQuizzes);
-        quizList.setRenderer(new ComponentRenderer<>(this::createQuizLayout));
-
-        add(title, searchField, quizList);
+        add(codeField, submitButton);
         setAlignItems(Alignment.CENTER);
     }
 
-    private VerticalLayout createQuizLayout(Quiz quiz) {
-        var layout = new VerticalLayout();
-
-        layout.getStyle()
-                .setBackgroundColor("lightgray")
-                .setBorderRadius("5px")
-                .setPadding("10px")
-                .setMargin("5px");
-
-        layout.add(
-                new H1(quiz.getTitle()),
-                new Span(quiz.getDescription()),
-                new Span("Typ: " + quiz.getType()),
-                new Button("Quiz starten", event -> startQuiz(quiz.getId()))
-        );
-        return layout;
+    private boolean validateCode(String code) {
+        return quizRepository.findAll().stream()
+                .filter(quiz -> quiz.getType() == QuizType.TESTQUIZ)
+                .anyMatch(quiz -> code.equals(quiz.getAccessCode()));
     }
 
-    private void filterQuizzes(String filter) {
-        List<Quiz> filteredQuizzes = allQuizzes.stream()
-                .filter(quiz -> quiz.getTitle().toLowerCase().contains(filter.toLowerCase()))
-                .collect(Collectors.toList());
-        quizList.setItems(filteredQuizzes);
-    }
+    private void navigateToTestQuiz(String accessCode) {
+        Optional<Quiz> matchingQuiz = quizRepository.findAll().stream()
+                .filter(quiz -> quiz.getType() == QuizType.TESTQUIZ)
+                .filter(quiz -> accessCode.equals(quiz.getAccessCode()))
+                .findFirst();
 
-    private void startQuiz(Long quizId) {
-        getUI().ifPresent(ui -> ui.navigate(TestQuizView.class, quizId));
+        if (matchingQuiz.isPresent()) {
+            Quiz quiz = matchingQuiz.get();
+
+            var dialog = new ConfirmDialog();
+            dialog.setHeader("Quiz gefunden: " + quiz.getTitle());
+            dialog.setText("Beschreibung: " + quiz.getDescription() + "\nSchwierigkeit: " + quiz.getDifficulty());
+            dialog.setCancelable(true);
+            dialog.setConfirmButton("Fortfahren", event -> getUI().ifPresent(ui -> ui.navigate(TestQuizView.class, quiz.getId())));
+            dialog.open();
+        } else {
+            Notification.show("Kein passendes Quiz mit dem Zugangscode gefunden!", 3000, Notification.Position.TOP_CENTER);
+        }
     }
 }

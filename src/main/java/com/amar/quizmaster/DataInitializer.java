@@ -34,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(adminUser);
 
         /// Quizze und deren Questions
-        Quiz quiz1 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.LERNQUIZ, Difficulty.EASY);
+        Quiz quiz1 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.LERNQUIZ, Difficulty.EASY, null);
         quizRepository.save(quiz1);
 
         Question question1_1 = new Question(
@@ -56,7 +56,7 @@ public class DataInitializer implements CommandLineRunner {
 
         /// ----------
 
-        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM);
+        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM, "abc");
         quizRepository.save(quiz2);
 
         Question question2_1 = new Question(
