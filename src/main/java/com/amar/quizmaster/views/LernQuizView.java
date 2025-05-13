@@ -24,7 +24,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @Route(value = "LernQuiz", layout = MainLayout.class)
 @PageTitle("LernQuiz")
@@ -49,9 +50,9 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
             final QuestionRepository questionRepository,
             final QuizRepository quizRepository,
             final LeaderboardRepository leaderboardRepository) {
-        this.questionRepository = Objects.requireNonNull(questionRepository);
-        this.quizRepository = Objects.requireNonNull(quizRepository);
-        this.leaderboardRepository = Objects.requireNonNull(leaderboardRepository);
+        this.questionRepository = requireNonNull(questionRepository);
+        this.quizRepository = requireNonNull(quizRepository);
+        this.leaderboardRepository = requireNonNull(leaderboardRepository);
 
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setPadding(true);
