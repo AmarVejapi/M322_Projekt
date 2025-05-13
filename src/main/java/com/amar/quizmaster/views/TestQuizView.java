@@ -21,6 +21,7 @@ import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,13 +137,15 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
 
     private void checkAnswer(int selectedAnswer, Button answerButton) {
         Question currentQuestion = questions.get(questionIndex);
+        int correctIndex = currentQuestion.getCorrectAnswerIndex();
 
-        if (selectedAnswer == currentQuestion.getCorrectAnswerIndex()) {
+        if (selectedAnswer == correctIndex) {
             score++;
-            Notification.show("Richtig! Punktestand: " + score, 2000, Notification.Position.MIDDLE);
+            Notification.show("Richtig!", 2000, Notification.Position.MIDDLE);
+            answerButton.getStyle().setBackgroundColor("green");
         } else {
-            Notification.show("Falsch! Die richtige Antwort war: " +
-                    currentQuestion.getOptions().get(currentQuestion.getCorrectAnswerIndex()), 2000, Notification.Position.MIDDLE);
+            Notification.show("Falsch!", 2000, Notification.Position.MIDDLE);
+            answerButton.getStyle().setBackgroundColor("red");
         }
 
         questionIndex++;
@@ -206,7 +209,10 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         leaderboardGrid.addColumn(Leaderboard::getUsername).setHeader("Benutzer").setSortable(true);
         leaderboardGrid.addColumn(Leaderboard::getScore).setHeader("Punktzahl").setSortable(true);
         leaderboardGrid.addColumn(Leaderboard::getTime).setHeader("Zeit (s)").setSortable(true);
-        leaderboardGrid.addColumn(Leaderboard::getCompletedAt).setHeader("Abgeschlossen am").setSortable(true);
+        leaderboardGrid.addColumn(entry ->
+                        entry.getCompletedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+                .setHeader("Abgeschlossen am")
+                .setSortable(true);
 
         leaderboardGrid.setWidthFull();
 

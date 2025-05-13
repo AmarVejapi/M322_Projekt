@@ -21,6 +21,7 @@ import com.vaadin.flow.router.Route;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -119,7 +120,6 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
                     .setPadding("10px")
                     .setColor("white")
                     .setBackgroundColor("#007BFF")
-                    .setBorder("none")
                     .setBorderRadius("5px")
                     .setFontSize("16px")
                     .setCursor("pointer");
@@ -135,13 +135,15 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
 
     private void checkAnswer(int selectedAnswer, Button answerButton) {
         Question currentQuestion = questions.get(questionIndex);
+        int correctIndex = currentQuestion.getCorrectAnswerIndex();
 
-        if (selectedAnswer == currentQuestion.getCorrectAnswerIndex()) {
+        if (selectedAnswer == correctIndex) {
             score++;
             Notification.show("Richtig! Punktestand: " + score, 2000, Notification.Position.MIDDLE);
+            answerButton.getStyle().setBackgroundColor("green");
         } else {
-            Notification.show("Falsch! Die richtige Antwort war: " +
-                    currentQuestion.getOptions().get(currentQuestion.getCorrectAnswerIndex()), 2000, Notification.Position.MIDDLE);
+            Notification.show("Falsch!", 2000, Notification.Position.MIDDLE);
+            answerButton.getStyle().setBackgroundColor("red");
         }
 
         questionIndex++;
@@ -170,8 +172,8 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
 
         var resultInfo = new Span("Dein Punktestand: " + score + " Punkte");
         var timeInfo = new Span("Benötigte Zeit: " + durationInSeconds + " Sekunden");
-        resultInfo.getStyle().set("margin", "10px 0").set("font-size", "18px");
-        timeInfo.getStyle().set("margin", "10px 0").set("font-size", "18px");
+        resultInfo.getStyle().setMargin("10px 0").setFontSize("18px");
+        timeInfo.getStyle().setMargin("10px 0").setFontSize("18px");
 
         add(resultInfo, timeInfo);
 
@@ -205,7 +207,10 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
         leaderboardGrid.addColumn(Leaderboard::getUsername).setHeader("Benutzer").setSortable(true);
         leaderboardGrid.addColumn(Leaderboard::getScore).setHeader("Punktzahl").setSortable(true);
         leaderboardGrid.addColumn(Leaderboard::getTime).setHeader("Zeit (s)").setSortable(true);
-        leaderboardGrid.addColumn(Leaderboard::getCompletedAt).setHeader("Abgeschlossen am").setSortable(true);
+        leaderboardGrid.addColumn(entry ->
+                        entry.getCompletedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+                .setHeader("Abgeschlossen am")
+                .setSortable(true);
 
         leaderboardGrid.setWidthFull();
 
@@ -214,7 +219,7 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
             leaderboardGrid.setItems(leaderboardData);
             add(leaderboardTitle, leaderboardGrid);
         } else {
-            Span noData = new Span("Noch keine Einträge in der Bestenliste für dieses Quiz.");
+            var noData = new Span("Noch keine Einträge in der Bestenliste für dieses Quiz.");
             noData.getStyle().setTextAlign(Style.TextAlign.CENTER).setMargin("10px 0");
             add(leaderboardTitle, noData);
         }
