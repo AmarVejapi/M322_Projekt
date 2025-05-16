@@ -18,13 +18,11 @@ public class MainLayout extends AppLayout {
 
     private void createHeader() {
         var title = new H1("Home");
-        title.getStyle()
-                .setMargin("0")
-                .setFontSize("1.5em");
+        title.getStyle().setMargin("0").setFontSize("1.5em");
 
         var logoutButton = new Button("Logout");
         logoutButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-        logoutButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate("login")));
+        logoutButton.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate("login")));
 
         var header = new HorizontalLayout(title);
         header.setWidthFull();

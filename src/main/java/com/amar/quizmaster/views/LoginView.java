@@ -2,6 +2,7 @@ package com.amar.quizmaster.views;
 
 import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.UserRepository;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
@@ -30,12 +31,23 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         System.out.println(currentUser);
 
-        var registerLink = new RouterLink("Noch kein Konto? Jetzt registrieren!", RegisterView.class);
+        var loginText = new Span("Schon ein Konto?");
+        loginText.getStyle().setColor("#555").setFontSize("14px").setMarginRight("5px");
 
-        add(loginForm, registerLink);
+        var formLayout = new VerticalLayout(
+                loginForm,
+                new Span(loginText, new RouterLink("Jetzt registrieren!", RegisterView.class))
+        );
+
+        formLayout.setSpacing(true);
+        formLayout.setPadding(true);
+        formLayout.setAlignItems(Alignment.CENTER);
+        formLayout.getStyle().setPadding("30px").setBackgroundColor("white").setMinWidth("300px");
+
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
+        add(formLayout);
     }
 
     private void configureLoginForm() {

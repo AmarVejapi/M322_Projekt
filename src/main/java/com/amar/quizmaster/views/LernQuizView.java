@@ -7,11 +7,11 @@ import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.LeaderboardRepository;
 import com.amar.quizmaster.repositories.QuestionRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
+import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.BeforeEvent;
@@ -47,10 +47,9 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
     private Quiz currentQuiz;
     private final List<Button> currentButtons = new ArrayList<>();
 
-    public LernQuizView(
-            final QuestionRepository questionRepository,
-            final QuizRepository quizRepository,
-            final LeaderboardRepository leaderboardRepository) {
+    public LernQuizView(final QuestionRepository questionRepository,
+                        final QuizRepository quizRepository,
+                        final LeaderboardRepository leaderboardRepository) {
         this.questionRepository = requireNonNull(questionRepository);
         this.quizRepository = requireNonNull(quizRepository);
         this.leaderboardRepository = requireNonNull(leaderboardRepository);
@@ -142,10 +141,10 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
 
         if (selectedAnswer == correctIndex) {
             score++;
-            Notification.show("Richtig! Punktestand: " + score, 2000, Notification.Position.MIDDLE);
+            Notificator.pointNotification("Richtig!");
             answerButton.getStyle().setBackgroundColor("green");
         } else {
-            Notification.show("Falsch!", 2000, Notification.Position.MIDDLE);
+            Notificator.pointNotification("Falsch!");
             answerButton.getStyle().setBackgroundColor("red");
         }
 
@@ -185,11 +184,6 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
     }
 
     private void saveLeaderboardEntry(long durationInSeconds) {
-        if (user == null) {
-            LoggerFactory.getLogger(getClass()).warn("Kein Benutzer gefunden. Leaderboard-Eintrag wird nicht gespeichert.");
-            return;
-        }
-
         var entry = new Leaderboard();
         entry.setScore(score);
         entry.setTime(durationInSeconds);

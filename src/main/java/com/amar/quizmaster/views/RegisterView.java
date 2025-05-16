@@ -44,7 +44,7 @@ public class RegisterView extends VerticalLayout {
         var message = new Span();
         message.setVisible(false);
 
-        registerButton.addClickListener(e -> registerUser(usernameField, passwordField, confirmPasswordField, message));
+        registerButton.addClickListener(event -> registerUser(usernameField, passwordField, confirmPasswordField, message));
 
         var loginText = new Span("Schon ein Konto?");
         loginText.getStyle().setColor("#555").setFontSize("14px").setMarginRight("5px");

@@ -33,8 +33,7 @@ public class LernQuizStartView extends VerticalLayout {
     private final List<Quiz> allQuizzes;
     private final VirtualList<Quiz> quizList;
 
-    public LernQuizStartView(final QuizRepository quizRepository,
-                             final LeaderboardRepository leaderboardRepository) {
+    public LernQuizStartView(final QuizRepository quizRepository, final LeaderboardRepository leaderboardRepository) {
         this.quizRepository = requireNonNull(quizRepository);
         this.leaderboardRepository = requireNonNull(leaderboardRepository);
 
@@ -45,7 +44,7 @@ public class LernQuizStartView extends VerticalLayout {
         var title = new H1("Quiz Übersicht");
 
         var searchField = new TextField();
-        searchField.setPlaceholder("Quiz suchen...");
+        searchField.setPlaceholder("Quiz suchen ...");
         searchField.addValueChangeListener(event -> filterQuizzes(event.getValue()));
 
         quizList = new VirtualList<>();
@@ -100,8 +99,8 @@ public class LernQuizStartView extends VerticalLayout {
         leaderboardGrid.addColumn(Leaderboard::getUsername).setHeader("Benutzer").setSortable(true);
         leaderboardGrid.addColumn(Leaderboard::getScore).setHeader("Punktzahl").setSortable(true);
         leaderboardGrid.addColumn(Leaderboard::getTime).setHeader("Zeit (s)").setSortable(true);
-        leaderboardGrid.addColumn(entry -> entry.getCompletedAt()
-                        .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+        leaderboardGrid.addColumn(entry ->
+                        entry.getCompletedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
                 .setHeader("Abgeschlossen am")
                 .setSortable(true);
 

@@ -4,6 +4,7 @@ import com.amar.quizmaster.model.Question;
 import com.amar.quizmaster.model.Quiz;
 import com.amar.quizmaster.repositories.QuestionRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
+import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -68,7 +69,7 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
             quiz.setTitle(titleField.getValue());
             quiz.setDescription(descriptionField.getValue());
             quizRepository.save(quiz);
-            Notification.show("Quiz-Daten aktualisiert", 3000, Notification.Position.MIDDLE);
+            Notificator.notification("Quiz-Daten aktualisiert");
         });
         saveQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -133,7 +134,7 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
         var saveButton = new Button("Speichern", event -> {
             question.setText(questionField.getValue());
             questionRepository.save(question);
-            Notification.show("Frage erfolgreich gespeichert", 3000, Notification.Position.MIDDLE);
+            Notificator.notification("Frage erfolgreich gespeichert");
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -155,6 +156,6 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
         quiz.getQuestions().remove(question);
         questionRepository.delete(question);
         remove(component);
-        Notification.show("Frage gelöscht", 3000, Notification.Position.MIDDLE);
+        Notificator.notification("Frage gelöscht");
     }
 }

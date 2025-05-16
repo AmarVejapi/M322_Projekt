@@ -3,9 +3,9 @@ package com.amar.quizmaster.views;
 import com.amar.quizmaster.model.Quiz;
 import com.amar.quizmaster.model.QuizType;
 import com.amar.quizmaster.repositories.QuizRepository;
+import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -30,13 +30,13 @@ public class TestQuizStartView extends VerticalLayout {
         codeField.setPlaceholder("Code eingeben ...");
         codeField.setTooltipText("Bitte gib den Zugriffs-Code für das Test Quiz ein:");
 
-        var submitButton = new Button("Quiz starten", event -> {
+        var submitButton = new Button("Quiz starten");
+        submitButton.addClickListener(event -> {
             String code = codeField.getValue();
             if (validateCode(code)) {
                 navigateToTestQuiz(code);
             } else {
-                Notification.show("Ungültiger Code. Bitte versuche es erneut.",
-                        3000, Notification.Position.MIDDLE);
+                Notificator.notification("Ungültiger Code. Bitte versuche es erneut.");
             }
         });
 
@@ -66,7 +66,7 @@ public class TestQuizStartView extends VerticalLayout {
             dialog.setConfirmButton("Fortfahren", event -> getUI().ifPresent(ui -> ui.navigate(TestQuizView.class, quiz.getId())));
             dialog.open();
         } else {
-            Notification.show("Kein passendes Quiz mit dem Zugangscode gefunden!", 3000, Notification.Position.TOP_CENTER);
+            Notificator.notification("Kein passendes Quiz mit dem Zugangscode gefunden!");
         }
     }
 }

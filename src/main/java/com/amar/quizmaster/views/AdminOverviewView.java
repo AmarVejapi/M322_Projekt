@@ -5,6 +5,7 @@ import com.amar.quizmaster.model.QuizType;
 import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.amar.quizmaster.repositories.UserRepository;
+import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -48,7 +49,7 @@ public class AdminOverviewView extends VerticalLayout {
         createQuizButton.getStyle().setMarginBottom("15px");
 
         var searchField = new TextField();
-        searchField.setPlaceholder("Quiz suchen...");
+        searchField.setPlaceholder("Quiz suchen ...");
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(event -> filterQuizList(event.getValue()));
 
@@ -70,7 +71,9 @@ public class AdminOverviewView extends VerticalLayout {
         if (filterText == null || filterText.isEmpty()) {
             displayQuizList(allQuizzes);
         } else {
-            List<Quiz> filteredQuizzes = allQuizzes.stream().filter(quiz -> quiz.getTitle().toLowerCase().contains(filterText.toLowerCase())).toList();
+            List<Quiz> filteredQuizzes = allQuizzes.stream()
+                    .filter(quiz -> quiz.getTitle().toLowerCase().contains(filterText.toLowerCase()))
+                    .toList();
             displayQuizList(filteredQuizzes);
         }
     }
@@ -122,7 +125,7 @@ public class AdminOverviewView extends VerticalLayout {
 
         var saveButton = new Button("Speichern", event -> {
             if (titleField.isEmpty() || descriptionField.isEmpty() || typeField.isEmpty()) {
-                Notification.show("Bitte füllen Sie alle Felder aus!", 3000, Notification.Position.MIDDLE);
+                Notificator.notification("Bitte füllen Sie alle Felder aus!");
             } else {
                 saveNewQuiz(titleField.getValue(), descriptionField.getValue(), typeField.getValue());
                 dialog.close();
@@ -169,7 +172,7 @@ public class AdminOverviewView extends VerticalLayout {
             allQuizzes.remove(quiz);
             displayQuizList(allQuizzes);
             confirmDialog.close();
-            Notification.show("Quiz gelöscht", 3000, Notification.Position.MIDDLE);
+            Notificator.notification("Quiz gelöscht");
         });
         confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
