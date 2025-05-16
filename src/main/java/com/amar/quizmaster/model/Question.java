@@ -42,12 +42,24 @@ public class Question {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public List<String> getOptions() {
         return options;
     }
 
+    public void setOptions(List<String> options) {
+        this.options = options;
+    }
+
     public int getCorrectAnswerIndex() {
         return correctAnswerIndex;
+    }
+
+    public void setCorrectAnswerIndex(int correctAnswerIndex) {
+        this.correctAnswerIndex = correctAnswerIndex;
     }
 
     public Quiz getQuiz() {

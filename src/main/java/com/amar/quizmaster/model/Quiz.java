@@ -19,20 +19,24 @@ public class Quiz {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "quiz", orphanRemoval = true)
     private List<Question> questions;
 
     private String accessCode;
 
+    @ManyToOne
+    private User creator;
+
     public Quiz() {
     }
 
-    public Quiz(String title, String description, QuizType type, Difficulty difficulty, String accessCode) {
+    public Quiz(String title, String description, QuizType type, Difficulty difficulty, String accessCode, User creator) {
         this.title = title;
         this.description = description;
         this.type = type;
         this.difficulty = difficulty;
         this.accessCode = accessCode;
+        this.creator = creator;
     }
 
     public Long getId() {
@@ -89,5 +93,13 @@ public class Quiz {
 
     public void setAccessCode(String accessCode) {
         this.accessCode = accessCode;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 }

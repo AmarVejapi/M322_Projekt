@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -34,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(adminUser);
 
         /// Quizze und deren Questions
-        Quiz quiz1 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.LERNQUIZ, Difficulty.EASY, null);
+        Quiz quiz1 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.LERNQUIZ, Difficulty.EASY, null, adminUser);
         quizRepository.save(quiz1);
 
         Question question1_1 = new Question(
@@ -56,7 +55,7 @@ public class DataInitializer implements CommandLineRunner {
 
         /// ----------
 
-        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM, "abc");
+        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM, "abc", adminUser);
         quizRepository.save(quiz2);
 
         Question question2_1 = new Question(

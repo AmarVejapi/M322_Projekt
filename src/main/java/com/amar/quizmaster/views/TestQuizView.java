@@ -34,6 +34,7 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
     private final QuestionRepository questionRepository;
     private final QuizRepository quizRepository;
     private final LeaderboardRepository leaderboardRepository;
+    private final User user;
 
     private final H1 titleLabel = new H1();
     private final H1 questionLabel = new H1();
@@ -53,6 +54,7 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         this.questionRepository = requireNonNull(questionRepository);
         this.quizRepository = requireNonNull(quizRepository);
         this.leaderboardRepository = requireNonNull(leaderboardRepository);
+        this.user = LoginView.currentUser;
 
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setPadding(true);
@@ -184,9 +186,7 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
     }
 
     private void saveLeaderboardEntry(long durationInSeconds) {
-        User currentUser = LoginView.currentUser;
-
-        if (currentUser == null) {
+        if (user == null) {
             LoggerFactory.getLogger(getClass()).warn("Kein Benutzer gefunden. Leaderboard-Eintrag wird nicht gespeichert.");
             return;
         }
@@ -196,7 +196,7 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         entry.setTime(durationInSeconds);
         entry.setQuizTitle(currentQuiz.getTitle());
         entry.setCompletedAt(LocalDateTime.now());
-        entry.setUser(currentUser);
+        entry.setUser(user);
 
         leaderboardRepository.save(entry);
     }

@@ -2,6 +2,7 @@ package com.amar.quizmaster.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Leaderboard> leaderboards;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Quiz> createdQuizzes = new ArrayList<>();
 
     public User() {
     }
@@ -64,5 +68,13 @@ public class User {
 
     public List<Leaderboard> getLeaderboards() {
         return leaderboards;
+    }
+
+    public List<Quiz> getCreatedQuizzes() {
+        return createdQuizzes;
+    }
+
+    public void setCreatedQuizzes(List<Quiz> createdQuizzes) {
+        this.createdQuizzes = createdQuizzes;
     }
 }

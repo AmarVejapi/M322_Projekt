@@ -28,6 +28,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         configureLoginForm();
 
+        System.out.println(currentUser);
+
         var registerLink = new RouterLink("Noch kein Konto? Jetzt registrieren!", RegisterView.class);
 
         add(loginForm, registerLink);
