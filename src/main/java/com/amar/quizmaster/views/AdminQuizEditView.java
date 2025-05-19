@@ -93,7 +93,7 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
         questionRepository.save(newQuestion);
 
         add(createQuestionEditor(newQuestion));
-        Notification.show("Neue Frage hinzugefügt", 3000, Notification.Position.MIDDLE);
+        Notificator.notification("Neue Frage hinzugefügt");
 
         UI.getCurrent().getPage().reload();
     }

@@ -12,7 +12,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.BeforeEvent;
@@ -173,10 +172,10 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         long quizEndTime = System.currentTimeMillis();
         long durationInSeconds = (quizEndTime - quizStartTime) / 1000;
 
-        var resultInfo = new Span("Dein Punktestand: " + score + " Punkte");
-        var timeInfo = new Span("Benötigte Zeit: " + durationInSeconds + " Sekunden");
-        resultInfo.getStyle().set("margin", "10px 0").set("font-size", "18px");
-        timeInfo.getStyle().set("margin", "10px 0").set("font-size", "18px");
+        var resultInfo = new Span(String.format("Dein Punktestand: %s Punkte", score));
+        var timeInfo = new Span(String.format("Benötigte Zeit: %s Sekunden", durationInSeconds));
+        resultInfo.getStyle().setMargin("10px 0").setFontSize("18px");
+        timeInfo.getStyle().setMargin("10px 0").setFontSize("18px");
 
         add(resultInfo, timeInfo);
 

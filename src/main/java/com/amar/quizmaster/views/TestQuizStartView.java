@@ -28,7 +28,7 @@ public class TestQuizStartView extends VerticalLayout {
 
         var codeField = new TextField();
         codeField.setPlaceholder("Code eingeben ...");
-        codeField.setTooltipText("Bitte gib den Zugriffs-Code für das Test Quiz ein:");
+        codeField.setTooltipText("Bitte gib den Zugriffs-Code für das Test Quiz ein");
 
         var submitButton = new Button("Quiz starten");
         submitButton.addClickListener(event -> {

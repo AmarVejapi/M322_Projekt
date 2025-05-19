@@ -171,8 +171,8 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
         long quizEndTime = System.currentTimeMillis();
         long durationInSeconds = (quizEndTime - quizStartTime) / 1000;
 
-        var resultInfo = new Span("Dein Punktestand: " + score + " Punkte");
-        var timeInfo = new Span("Benötigte Zeit: " + durationInSeconds + " Sekunden");
+        var resultInfo = new Span(String.format("Dein Punktestand: %s Punkte", score));
+        var timeInfo = new Span(String.format("Benötigte Zeit: %s Sekunden", durationInSeconds));
         resultInfo.getStyle().setMargin("10px 0").setFontSize("18px");
         timeInfo.getStyle().setMargin("10px 0").setFontSize("18px");
 

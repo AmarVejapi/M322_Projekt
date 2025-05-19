@@ -42,7 +42,7 @@ public class AdminOverviewView extends VerticalLayout {
         setWidthFull();
         setSpacing(false);
 
-        var title = new H1("Admin-Bereich: Ihre Quizze");
+        var title = new H1("Ihre Quizze");
         var createQuizButton = new Button("Neues Quiz erstellen", event -> openQuizCreationDialog());
         createQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         createQuizButton.getStyle().setMarginBottom("15px");
@@ -79,6 +79,7 @@ public class AdminOverviewView extends VerticalLayout {
 
     private void displayQuizList(List<Quiz> quizzes) {
         quizListLayout.removeAll();
+
         if (quizzes.isEmpty()) {
             quizListLayout.add(new Span("Keine Quizze gefunden."));
         } else {
@@ -93,7 +94,33 @@ public class AdminOverviewView extends VerticalLayout {
                 editButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
                 deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-                var quizLayout = new VerticalLayout(quizTitle, description, type, new HorizontalLayout(editButton, deleteButton));
+                Span accessCodeLabel = new Span();
+                if (quiz.getAccessCode() != null) {
+                    accessCodeLabel.setText("Access-Code: " + quiz.getAccessCode());
+                    accessCodeLabel.getElement().getThemeList().add("badge");
+                } else {
+                    accessCodeLabel.setText("");
+                }
+
+                var startTestQuizButton = new Button("Test-Quiz starten");
+                startTestQuizButton.addClickListener(event -> {
+                    String accessCode = generateAndSaveAccessCode(quiz);
+                    accessCodeLabel.setText("Access-Code: %s" + accessCode);
+                    Notificator.notification(String.format("Ihr neuer Access-Code lautet: %s (gültig für 1 Stunde)", accessCode));
+                    startAccessCodeExpirationTimer();
+                });
+                startTestQuizButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
+                var buttonLayout = new HorizontalLayout(editButton, deleteButton, startTestQuizButton, accessCodeLabel);
+                buttonLayout.setAlignItems(Alignment.BASELINE);
+
+                var quizLayout = new VerticalLayout(
+                        quizTitle,
+                        description,
+                        type,
+                        buttonLayout
+                );
+
                 quizLayout.getStyle()
                         .setBackgroundColor("lightgray")
                         .setBorderRadius("5px")
@@ -122,7 +149,8 @@ public class AdminOverviewView extends VerticalLayout {
         typeField.setItemLabelGenerator(QuizType::name);
         typeField.setWidthFull();
 
-        var saveButton = new Button("Speichern", event -> {
+        var saveButton = new Button("Speichern");
+        saveButton.addClickListener(event -> {
             if (titleField.isEmpty() || descriptionField.isEmpty() || typeField.isEmpty()) {
                 Notificator.notification("Bitte füllen Sie alle Felder aus!");
             } else {
@@ -164,9 +192,10 @@ public class AdminOverviewView extends VerticalLayout {
     private void deleteQuizWithConfirmation(Quiz quiz) {
         var confirmDialog = new Dialog();
         confirmDialog.setHeaderTitle("Quiz löschen");
-        confirmDialog.add(new Span("Möchten Sie das Quiz '" + quiz.getTitle() + "' wirklich löschen?"));
+        confirmDialog.add(new Span(String.format("Möchten Sie das Quiz '%s' wirklich löschen?", quiz.getTitle())));
 
-        var confirmButton = new Button("Löschen", event -> {
+        var confirmButton = new Button("Löschen");
+        confirmButton.addClickListener(event -> {
             quizRepository.delete(quiz);
             allQuizzes.remove(quiz);
             displayQuizList(allQuizzes);
@@ -181,5 +210,27 @@ public class AdminOverviewView extends VerticalLayout {
         confirmDialog.open();
     }
 
-    // ToDo: accessCode-Option
+    private String generateAndSaveAccessCode(Quiz quiz) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder accessCode = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            int randomIndex = (int) (Math.random() * characters.length());
+            accessCode.append(characters.charAt(randomIndex));
+        }
+
+        quiz.setAccessCode(accessCode.toString());
+        quizRepository.save(quiz);
+
+        return accessCode.toString();
+    }
+
+    private void startAccessCodeExpirationTimer() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(3600000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
 }

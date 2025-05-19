@@ -54,7 +54,7 @@ public class DataInitializer implements CommandLineRunner {
 
         /// ----------
 
-        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM, "abc", adminUser);
+        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM, null, adminUser);
         quizRepository.save(quiz2);
 
         Question question2_1 = new Question(
