@@ -47,8 +47,7 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
     private Quiz currentQuiz;
     private final List<Button> currentButtons = new ArrayList<>();
 
-    public LernQuizView(final QuestionRepository questionRepository,
-                        final QuizRepository quizRepository,
+    public LernQuizView(final QuestionRepository questionRepository, final QuizRepository quizRepository,
                         final LeaderboardRepository leaderboardRepository) {
         this.questionRepository = requireNonNull(questionRepository);
         this.quizRepository = requireNonNull(quizRepository);

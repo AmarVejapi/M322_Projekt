@@ -18,8 +18,7 @@ public class DataInitializer implements CommandLineRunner {
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
 
-    public DataInitializer(final QuestionRepository questionRepository,
-                           final QuizRepository quizRepository,
+    public DataInitializer(final QuestionRepository questionRepository, final QuizRepository quizRepository,
                            final UserRepository userRepository) {
         this.questionRepository = requireNonNull(questionRepository);
         this.quizRepository = requireNonNull(quizRepository);
@@ -74,7 +73,5 @@ public class DataInitializer implements CommandLineRunner {
 
         questionRepository.save(question2_1);
         questionRepository.save(question2_2);
-
-        /// ----------
     }
 }

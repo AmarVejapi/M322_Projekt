@@ -29,16 +29,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         configureLoginForm();
 
-        System.out.println(currentUser);
-
-        var loginText = new Span("Schon ein Konto?");
-        loginText.getStyle().setColor("#555").setFontSize("14px").setMarginRight("5px");
+        var loginText = new Span("Noch kein Konto?");
+        loginText.getStyle().setMarginRight("5px");
 
         var formLayout = new VerticalLayout(
                 loginForm,
                 new Span(loginText, new RouterLink("Jetzt registrieren!", RegisterView.class))
         );
-
         formLayout.setSpacing(true);
         formLayout.setPadding(true);
         formLayout.setAlignItems(Alignment.CENTER);
@@ -53,9 +50,9 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     private void configureLoginForm() {
         loginForm.setForgotPasswordButtonVisible(false);
 
-        loginForm.addLoginListener(e -> {
-            String username = e.getUsername();
-            String password = e.getPassword();
+        loginForm.addLoginListener(event -> {
+            String username = event.getUsername();
+            String password = event.getPassword();
 
             Optional<User> user = userRepository.findByUsername(username);
 

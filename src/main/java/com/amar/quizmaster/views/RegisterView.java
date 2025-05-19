@@ -4,6 +4,7 @@ import com.amar.quizmaster.model.Role;
 import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.UserRepository;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -39,7 +40,7 @@ public class RegisterView extends VerticalLayout {
         confirmPasswordField.setWidth("300px");
 
         var registerButton = new Button("Registrieren");
-        registerButton.getStyle().setBackgroundColor("#007bff").setColor("white");
+        registerButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         var message = new Span();
         message.setVisible(false);
@@ -47,7 +48,7 @@ public class RegisterView extends VerticalLayout {
         registerButton.addClickListener(event -> registerUser(usernameField, passwordField, confirmPasswordField, message));
 
         var loginText = new Span("Schon ein Konto?");
-        loginText.getStyle().setColor("#555").setFontSize("14px").setMarginRight("5px");
+        loginText.getStyle().setMarginRight("5px");
 
         var formLayout = new VerticalLayout(
                 title,

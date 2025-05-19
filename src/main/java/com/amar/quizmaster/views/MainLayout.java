@@ -3,7 +3,7 @@ package com.amar.quizmaster.views;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -17,12 +17,10 @@ public class MainLayout extends AppLayout {
     }
 
     private void createHeader() {
-        var title = new H1("Home");
-        title.getStyle().setMargin("0").setFontSize("1.5em");
+        var title = new H2("Home");
 
-        var logoutButton = new Button("Logout");
+        var logoutButton = new Button("Logout", event -> getUI().ifPresent(ui -> ui.navigate("login")));
         logoutButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-        logoutButton.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate("login")));
 
         var header = new HorizontalLayout(title);
         header.setWidthFull();
@@ -34,16 +32,11 @@ public class MainLayout extends AppLayout {
     }
 
     private void createDrawer() {
-        var homeLink = new RouterLink("Home", MainView.class);
-        var lernQuizLink = new RouterLink("Lern-Quiz", LernQuizStartView.class);
-        var testQuizLink = new RouterLink("Test-Quiz", TestQuizStartView.class);
-        var adminBereichLink = new RouterLink("Admin-Bereich", AdminOverviewView.class);
-
         var menuLayout = new VerticalLayout(
-                homeLink,
-                lernQuizLink,
-                testQuizLink,
-                adminBereichLink
+                new RouterLink("Home", MainView.class),
+                new RouterLink("Lern-Quiz", LernQuizStartView.class),
+                new RouterLink("Test-Quiz", TestQuizStartView.class),
+                new RouterLink("Admin-Bereich", AdminOverviewView.class)
         );
 
         addToDrawer(menuLayout);

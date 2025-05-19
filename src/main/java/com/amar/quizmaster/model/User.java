@@ -65,16 +65,4 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
-
-    public List<Leaderboard> getLeaderboards() {
-        return leaderboards;
-    }
-
-    public List<Quiz> getCreatedQuizzes() {
-        return createdQuizzes;
-    }
-
-    public void setCreatedQuizzes(List<Quiz> createdQuizzes) {
-        this.createdQuizzes = createdQuizzes;
-    }
 }
