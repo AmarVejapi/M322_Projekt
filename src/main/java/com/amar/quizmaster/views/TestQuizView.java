@@ -7,11 +7,11 @@ import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.LeaderboardRepository;
 import com.amar.quizmaster.repositories.QuestionRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
-import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.BeforeEvent;
@@ -110,8 +110,8 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
             String option = options.get(i);
 
             var answerButton = new Button(option);
-            answerButton.addClickListener(click -> {
-                disableAllButtons();
+            answerButton.addClickListener(event -> {
+                currentButtons.forEach(button -> button.setEnabled(false));
                 checkAnswer(index, answerButton);
             });
 
@@ -131,25 +131,22 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         }
     }
 
-    private void disableAllButtons() {
-        currentButtons.forEach(button -> button.setEnabled(false));
-    }
-
     private void checkAnswer(int selectedAnswer, Button answerButton) {
         Question currentQuestion = questions.get(questionIndex);
         int correctIndex = currentQuestion.getCorrectAnswerIndex();
 
         if (selectedAnswer == correctIndex) {
             score++;
-            Notificator.pointNotification("Richtig!");
+            Notification.show("Richtig!", 2000, Notification.Position.MIDDLE);
             answerButton.getStyle().setBackgroundColor("green");
         } else {
-            Notificator.pointNotification("Falsch!");
+            Notification.show("Falsch!", 2000, Notification.Position.MIDDLE);
             answerButton.getStyle().setBackgroundColor("red");
         }
 
         questionIndex++;
         scoreLabel.setText("Punktestand: " + score);
+        scoreLabel.getElement().getThemeList().add("badge");
 
         new Thread(() -> {
             try {
@@ -176,6 +173,8 @@ public class TestQuizView extends VerticalLayout implements HasUrlParameter<Long
         var timeInfo = new Span(String.format("Benötigte Zeit: %s Sekunden", durationInSeconds));
         resultInfo.getStyle().setMargin("10px 0").setFontSize("18px");
         timeInfo.getStyle().setMargin("10px 0").setFontSize("18px");
+        resultInfo.getElement().getThemeList().add("badge success");
+        timeInfo.getElement().getThemeList().add("badge success");
 
         add(resultInfo, timeInfo);
 

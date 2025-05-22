@@ -49,6 +49,7 @@ public class AdminOverviewView extends VerticalLayout {
 
         var searchField = new TextField();
         searchField.setPlaceholder("Quiz suchen ...");
+        searchField.setTooltipText("Nach Quiztitel suchen");
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(event -> filterQuizList(event.getValue()));
 
@@ -70,9 +71,7 @@ public class AdminOverviewView extends VerticalLayout {
         if (filterText == null || filterText.isEmpty()) {
             displayQuizList(allQuizzes);
         } else {
-            List<Quiz> filteredQuizzes = allQuizzes.stream()
-                    .filter(quiz -> quiz.getTitle().toLowerCase().contains(filterText.toLowerCase()))
-                    .toList();
+            List<Quiz> filteredQuizzes = allQuizzes.stream().filter(quiz -> quiz.getTitle().toLowerCase().contains(filterText.toLowerCase())).toList();
             displayQuizList(filteredQuizzes);
         }
     }
@@ -85,47 +84,39 @@ public class AdminOverviewView extends VerticalLayout {
         } else {
             for (Quiz quiz : quizzes) {
                 var quizTitle = new Span("Titel: " + quiz.getTitle());
+                quizTitle.getStyle().setFontSize("1.5em").setFontWeight("bold");
                 var description = new Span("Beschreibung: " + quiz.getDescription());
-                var type = new Span("Typ: " + quiz.getType());
+                var quizType = new Span(quiz.getType().toString());
+                quizType.getElement().getThemeList().add((quiz.getType() == QuizType.LERNQUIZ ? "badge" : "badge success"));
+                var quizTypeLayout = new HorizontalLayout(new Span("Typ:"), quizType);
 
                 var editButton = new Button("Bearbeiten", event -> editQuiz(quiz));
                 var deleteButton = new Button("Löschen", event -> deleteQuizWithConfirmation(quiz));
 
                 editButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-                deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+                deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-                Span accessCodeLabel = new Span();
-                if (quiz.getAccessCode() != null) {
-                    accessCodeLabel.setText("Access-Code: " + quiz.getAccessCode());
-                    accessCodeLabel.getElement().getThemeList().add("badge");
-                } else {
-                    accessCodeLabel.setText("");
+                var accessCodeLabel = new Span();
+
+                var startTestQuizButton = new Button("Access-Code generieren");
+                if (quiz.getType() == QuizType.LERNQUIZ) {
+                    startTestQuizButton.setVisible(false);
                 }
-
-                var startTestQuizButton = new Button("Test-Quiz starten");
                 startTestQuizButton.addClickListener(event -> {
                     String accessCode = generateAndSaveAccessCode(quiz);
-                    accessCodeLabel.setText("Access-Code: %s" + accessCode);
+                    accessCodeLabel.setText(String.format("Access-Code: %s", accessCode));
+                    accessCodeLabel.getElement().getThemeList().add("badge success");
                     Notificator.notification(String.format("Ihr neuer Access-Code lautet: %s (gültig für 1 Stunde)", accessCode));
                     startAccessCodeExpirationTimer();
                 });
-                startTestQuizButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+                startTestQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
                 var buttonLayout = new HorizontalLayout(editButton, deleteButton, startTestQuizButton, accessCodeLabel);
                 buttonLayout.setAlignItems(Alignment.BASELINE);
 
-                var quizLayout = new VerticalLayout(
-                        quizTitle,
-                        description,
-                        type,
-                        buttonLayout
-                );
+                var quizLayout = new VerticalLayout(quizTitle, description, quizTypeLayout, buttonLayout);
 
-                quizLayout.getStyle()
-                        .setBackgroundColor("lightgray")
-                        .setBorderRadius("5px")
-                        .setPadding("10px")
-                        .setMarginBottom("10px");
+                quizLayout.getStyle().setBackgroundColor("lightgray").setBorderRadius("5px").setPadding("10px").setMarginBottom("10px");
 
                 quizListLayout.add(quizLayout);
             }
@@ -202,10 +193,17 @@ public class AdminOverviewView extends VerticalLayout {
             confirmDialog.close();
             Notificator.notification("Quiz gelöscht");
         });
-        confirmButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         var cancelButton = new Button("Abbrechen", event -> confirmDialog.close());
-        confirmDialog.getFooter().add(cancelButton, confirmButton);
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        var buttonLayout = new HorizontalLayout(cancelButton, confirmButton);
+        buttonLayout.setAlignItems(Alignment.BASELINE);
+        buttonLayout.setWidthFull();
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+
+        confirmDialog.getFooter().add(buttonLayout);
 
         confirmDialog.open();
     }

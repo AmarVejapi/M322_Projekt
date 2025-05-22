@@ -6,10 +6,12 @@ import com.amar.quizmaster.model.QuizType;
 import com.amar.quizmaster.repositories.LeaderboardRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.virtuallist.VirtualList;
@@ -64,15 +66,18 @@ public class LernQuizStartView extends VerticalLayout {
                 .setPadding("10px")
                 .setMargin("5px");
 
-        Button startQuizButton = new Button("Quiz starten", event -> startQuiz(quiz.getId()));
-        Button leaderboardButton = new Button("Zur Bestenliste", event -> openLeaderboardDialog(quiz));
+        var startQuizButton = new Button("Quiz starten", event -> startQuiz(quiz.getId()));
+        var leaderboardButton = new Button("Zur Bestenliste", event -> openLeaderboardDialog(quiz));
+        startQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        leaderboardButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        var buttonLayout = new HorizontalLayout(startQuizButton, leaderboardButton);
 
         layout.add(
                 new H1(quiz.getTitle()),
                 new Span(quiz.getDescription()),
                 new Span("Typ: " + quiz.getType()),
-                startQuizButton,
-                leaderboardButton
+                buttonLayout
         );
         return layout;
     }

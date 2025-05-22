@@ -5,7 +5,9 @@ import com.amar.quizmaster.model.QuizType;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -30,7 +32,8 @@ public class TestQuizStartView extends VerticalLayout {
         codeField.setPlaceholder("Code eingeben ...");
         codeField.setTooltipText("Bitte gib den Zugriffs-Code für das Test Quiz ein");
 
-        var submitButton = new Button("Quiz starten");
+        var submitButton = new Button("Quiz finden");
+        submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         submitButton.addClickListener(event -> {
             String code = codeField.getValue();
             if (validateCode(code)) {
@@ -40,7 +43,10 @@ public class TestQuizStartView extends VerticalLayout {
             }
         });
 
-        add(codeField, submitButton);
+        var title = new HorizontalLayout(codeField, submitButton);
+        title.getStyle().setPaddingTop("15px");
+
+        add(title);
         setAlignItems(Alignment.CENTER);
     }
 

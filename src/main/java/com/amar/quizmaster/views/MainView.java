@@ -1,5 +1,6 @@
 package com.amar.quizmaster.views;
 
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -13,8 +14,8 @@ public class MainView extends VerticalLayout implements BeforeEnterObserver {
 
     public MainView() {
         setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
+
+        add(new H3("Willkommen beim Quiz Master!"));
     }
 
     @Override

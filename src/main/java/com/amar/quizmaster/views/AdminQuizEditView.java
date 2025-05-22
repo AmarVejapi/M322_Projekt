@@ -11,7 +11,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -73,7 +72,14 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
         });
         saveQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        add(new H1("Quiz bearbeiten"), titleField, descriptionField, saveQuizButton);
+        var quizInfoLayout = new VerticalLayout(titleField, descriptionField, saveQuizButton);
+        quizInfoLayout.getStyle()
+                .setBackgroundColor("var(--lumo-contrast-10pct)")
+                .setBorderRadius("8px")
+                .setPadding("15px")
+                .setMarginBottom("25px");
+
+        add(new H1("Quiz bearbeiten"), quizInfoLayout);
 
         add(new H3("Fragen bearbeiten"));
 
@@ -82,7 +88,7 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
         }
 
         var addQuestionButton = new Button("Neue Frage hinzufügen", e -> addNewQuestion());
-        addQuestionButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addQuestionButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
         add(addQuestionButton);
     }
 
@@ -101,10 +107,13 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
     private VerticalLayout createQuestionEditor(Question question) {
         var questionLayout = new VerticalLayout();
         questionLayout.getStyle()
-                .setBackgroundColor("#f5f5f5")
-                .setPadding("15px")
+                .setBackgroundColor("var(--lumo-contrast-10pct)")
                 .setBorderRadius("8px")
+                .setPadding("15px")
                 .setMarginBottom("10px");
+
+        int questionIndex = quiz.getQuestions().indexOf(question) + 1;
+        var questionIndexNumber = new H4("Frage " + questionIndex);
 
         var questionField = new TextArea("Frage");
         questionField.setValue(question.getText());
@@ -118,7 +127,7 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
             var optionField = new TextField("Option " + (i + 1));
             optionField.setValue(question.getOptions().get(i));
             optionField.setWidthFull();
-            optionField.addValueChangeListener(e -> question.getOptions().set(index, e.getValue()));
+            optionField.addValueChangeListener(event -> question.getOptions().set(index, event.getValue()));
             optionsLayout.add(optionField);
         }
 
@@ -139,9 +148,10 @@ public class AdminQuizEditView extends VerticalLayout implements HasUrlParameter
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         var deleteButton = new Button("Löschen", event -> deleteQuestion(question, questionLayout));
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
         questionLayout.add(
+                questionIndexNumber,
                 questionField,
                 new H4("Antwortoptionen"),
                 optionsLayout,
