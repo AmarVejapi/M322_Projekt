@@ -116,7 +116,11 @@ public class AdminOverviewView extends VerticalLayout {
 
                 var quizLayout = new VerticalLayout(quizTitle, description, quizTypeLayout, buttonLayout);
 
-                quizLayout.getStyle().setBackgroundColor("lightgray").setBorderRadius("5px").setPadding("10px").setMarginBottom("10px");
+                quizLayout.getStyle()
+                        .setBackgroundColor("var(--lumo-contrast-10pct)")
+                        .setBorderRadius("5px")
+                        .setPadding("10px")
+                        .setMarginBottom("10px");
 
                 quizListLayout.add(quizLayout);
             }

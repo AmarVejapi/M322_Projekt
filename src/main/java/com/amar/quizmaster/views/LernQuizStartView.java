@@ -61,7 +61,7 @@ public class LernQuizStartView extends VerticalLayout {
         var layout = new VerticalLayout();
 
         layout.getStyle()
-                .setBackgroundColor("lightgray")
+                .setBackgroundColor("var(--lumo-contrast-10pct)")
                 .setBorderRadius("5px")
                 .setPadding("10px")
                 .setMargin("5px");
