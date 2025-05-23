@@ -7,6 +7,7 @@ import com.amar.quizmaster.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -28,21 +29,22 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         /// User
-        User adminUser = new User("admin", "admin", Role.ADMIN);
+        var adminUser = new User("admin", "admin", Role.ADMIN);
         userRepository.save(adminUser);
 
         /// Quizze und deren Questions
-        Quiz quiz1 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.LERNQUIZ, Difficulty.EASY, null, adminUser);
+        var quiz1 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen",
+                QuizType.LERNQUIZ, Difficulty.EASY, null, adminUser, LocalDateTime.now());
         quizRepository.save(quiz1);
 
-        Question question1_1 = new Question(
+        var question1_1 = new Question(
                 "Was ist die Hauptstadt von Deutschland?",
                 List.of("Berlin", "Hamburg", "München"),
                 0,
                 quiz1
         );
 
-        Question question1_2 = new Question(
+        var question1_2 = new Question(
                 "Welche Programmiersprache wird häufig in Android verwendet?",
                 List.of("Java", "C++", "Python"),
                 0,
@@ -54,17 +56,18 @@ public class DataInitializer implements CommandLineRunner {
 
         /// ----------
 
-        Quiz quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen", QuizType.TESTQUIZ, Difficulty.MEDIUM, null, adminUser);
+        var quiz2 = new Quiz("Allgemeinwissen", "Quiz über das Allgemeinwissen",
+                QuizType.TESTQUIZ, Difficulty.MEDIUM, null, adminUser, LocalDateTime.now());
         quizRepository.save(quiz2);
 
-        Question question2_1 = new Question(
+        var question2_1 = new Question(
                 "Was ist die Hauptstadt von Deutschland?",
                 List.of("Berlin", "Hamburg", "München"),
                 0,
                 quiz2
         );
 
-        Question question2_2 = new Question(
+        var question2_2 = new Question(
                 "Welche Programmiersprache wird häufig in Android verwendet?",
                 List.of("Java", "C++", "Python"),
                 0,

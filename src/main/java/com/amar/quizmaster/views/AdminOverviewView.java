@@ -9,7 +9,6 @@ import com.amar.quizmaster.utils.Notificator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -42,18 +41,17 @@ public class AdminOverviewView extends VerticalLayout {
         setWidthFull();
         setSpacing(false);
 
-        var title = new H1("Ihre Quizze");
         var createQuizButton = new Button("Neues Quiz erstellen", event -> openQuizCreationDialog());
         createQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         createQuizButton.getStyle().setMarginBottom("15px");
 
         var searchField = new TextField();
-        searchField.setPlaceholder("Quiz suchen ...");
-        searchField.setTooltipText("Nach Quiztitel suchen");
+        searchField.setPlaceholder("Quizze suchen ...");
+        searchField.setTooltipText("Quizze nach Titel suchen");
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(event -> filterQuizList(event.getValue()));
 
-        var topBar = new HorizontalLayout(title, searchField, createQuizButton);
+        var topBar = new HorizontalLayout(searchField, createQuizButton);
         topBar.setAlignItems(FlexComponent.Alignment.BASELINE);
         topBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         topBar.setWidthFull();
@@ -71,8 +69,7 @@ public class AdminOverviewView extends VerticalLayout {
         if (filterText == null || filterText.isEmpty()) {
             displayQuizList(allQuizzes);
         } else {
-            List<Quiz> filteredQuizzes = allQuizzes.stream().filter(quiz -> quiz.getTitle().toLowerCase().contains(filterText.toLowerCase())).toList();
-            displayQuizList(filteredQuizzes);
+            displayQuizList(allQuizzes.stream().filter(quiz -> quiz.getTitle().toLowerCase().contains(filterText.toLowerCase())).toList());
         }
     }
 
@@ -80,7 +77,9 @@ public class AdminOverviewView extends VerticalLayout {
         quizListLayout.removeAll();
 
         if (quizzes.isEmpty()) {
-            quizListLayout.add(new Span("Keine Quizze gefunden."));
+            var noQuizzesFoundLabel = new Span("Keine Quizze gefunden");
+            noQuizzesFoundLabel.getElement().getThemeList().add("badge error");
+            quizListLayout.add(noQuizzesFoundLabel);
         } else {
             for (Quiz quiz : quizzes) {
                 var quizTitle = new Span("Titel: " + quiz.getTitle());

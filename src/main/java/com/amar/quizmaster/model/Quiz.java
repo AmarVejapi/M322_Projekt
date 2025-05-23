@@ -2,6 +2,7 @@ package com.amar.quizmaster.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -27,16 +28,19 @@ public class Quiz {
     @ManyToOne
     private User creator;
 
+    private LocalDateTime createdAt;
+
     public Quiz() {
     }
 
-    public Quiz(String title, String description, QuizType type, Difficulty difficulty, String accessCode, User creator) {
+    public Quiz(String title, String description, QuizType type, Difficulty difficulty, String accessCode, User creator, LocalDateTime createdAt) {
         this.title = title;
         this.description = description;
         this.type = type;
         this.difficulty = difficulty;
         this.accessCode = accessCode;
         this.creator = creator;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -101,5 +105,13 @@ public class Quiz {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

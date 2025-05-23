@@ -7,6 +7,7 @@ import com.amar.quizmaster.repositories.LeaderboardRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
@@ -19,6 +20,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +37,8 @@ public class LernQuizStartView extends VerticalLayout {
     private final List<Quiz> allQuizzes;
     private final VirtualList<Quiz> quizList;
 
+    private final Span noQuizzesMessage = new Span("An diesem Tag wurde kein Quiz erstellt.");
+
     public LernQuizStartView(final QuizRepository quizRepository, final LeaderboardRepository leaderboardRepository) {
         this.quizRepository = requireNonNull(quizRepository);
         this.leaderboardRepository = requireNonNull(leaderboardRepository);
@@ -43,17 +47,24 @@ public class LernQuizStartView extends VerticalLayout {
 
         allQuizzes = quizRepository.findByType(QuizType.LERNQUIZ);
 
-        var title = new H1("Quiz Übersicht");
-
         var searchField = new TextField();
-        searchField.setPlaceholder("Quiz suchen ...");
+        searchField.setPlaceholder("Quizze suchen ...");
+        searchField.setTooltipText("Quizze nach Titel suchen");
         searchField.addValueChangeListener(event -> filterQuizzes(event.getValue()));
+
+        var createdAtPicker = new DatePicker();
+        createdAtPicker.setPlaceholder("Nach Datum filtern");
+        createdAtPicker.setTooltipText("Quizze nach Datum filtern");
+        createdAtPicker.addValueChangeListener(event -> filterQuizzesByCreatedAt(event.getValue()));
+
+        noQuizzesMessage.getElement().getThemeList().add("badge error");
+        noQuizzesMessage.setVisible(false);
 
         quizList = new VirtualList<>();
         quizList.setItems(allQuizzes);
         quizList.setRenderer(new ComponentRenderer<>(this::createQuizLayout));
 
-        add(title, searchField, quizList);
+        add(new HorizontalLayout(searchField, createdAtPicker), noQuizzesMessage, quizList);
         setAlignItems(Alignment.CENTER);
     }
 
@@ -124,6 +135,20 @@ public class LernQuizStartView extends VerticalLayout {
                 .filter(quiz -> quiz.getTitle().toLowerCase().contains(filter.toLowerCase()))
                 .collect(Collectors.toList());
         quizList.setItems(filteredQuizzes);
+    }
+
+    private void filterQuizzesByCreatedAt(LocalDate selectedDate) {
+        if (selectedDate != null) {
+            List<Quiz> filteredQuizzes = allQuizzes.stream()
+                    .filter(quiz -> quiz.getCreatedAt() != null && quiz.getCreatedAt().toLocalDate().isEqual(selectedDate))
+                    .collect(Collectors.toList());
+
+            noQuizzesMessage.setVisible(filteredQuizzes.isEmpty());
+            quizList.setItems(filteredQuizzes);
+        } else {
+            quizList.setItems(allQuizzes);
+            noQuizzesMessage.setVisible(false);
+        }
     }
 
     private void startQuiz(Long quizId) {
