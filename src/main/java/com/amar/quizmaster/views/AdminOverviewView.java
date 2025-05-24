@@ -95,20 +95,8 @@ public class AdminOverviewView extends VerticalLayout {
                 editButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
                 deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-                var accessCodeLabel = new Span();
-
-                var startTestQuizButton = new Button("Access-Code generieren");
-                if (quiz.getType() == QuizType.LERNQUIZ) {
-                    startTestQuizButton.setVisible(false);
-                }
-                startTestQuizButton.addClickListener(event -> {
-                    String accessCode = generateAndSaveAccessCode(quiz);
-                    accessCodeLabel.setText(String.format("Access-Code: %s", accessCode));
-                    accessCodeLabel.getElement().getThemeList().add("badge success");
-                    Notificator.notification(String.format("Ihr neuer Access-Code lautet: %s (gültig für 1 Stunde)", accessCode));
-                    startAccessCodeExpirationTimer();
-                });
-                startTestQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+                var accessCodeLabel = createAccessCodeLabel(quiz);
+                var startTestQuizButton = createStartTestQuizButton(quiz, accessCodeLabel);
 
                 var buttonLayout = new HorizontalLayout(editButton, deleteButton, startTestQuizButton, accessCodeLabel);
                 buttonLayout.setAlignItems(Alignment.BASELINE);
@@ -124,6 +112,39 @@ public class AdminOverviewView extends VerticalLayout {
                 quizListLayout.add(quizLayout);
             }
         }
+    }
+
+    private Span createAccessCodeLabel(Quiz quiz) {
+        var accessCodeLabel = new Span();
+        accessCodeLabel.setVisible(false);
+
+        if (quiz.getType() == QuizType.TESTQUIZ && quiz.getAccessCode() != null) {
+            updateAccessCodeLabel(accessCodeLabel, quiz.getAccessCode());
+        }
+        return accessCodeLabel;
+    }
+
+    private void updateAccessCodeLabel(Span label, String accessCode) {
+        label.setText(String.format("Access-Code: %s", accessCode));
+        label.getElement().getThemeList().clear();
+        label.getElement().getThemeList().add("badge success");
+        label.setVisible(true);
+    }
+
+    private Button createStartTestQuizButton(Quiz quiz, Span accessCodeLabel) {
+        var startTestQuizButton = new Button("Access-Code generieren");
+
+        startTestQuizButton.setVisible(quiz.getType() == QuizType.TESTQUIZ);
+
+        startTestQuizButton.addClickListener(event -> {
+            String accessCode = generateAndSaveAccessCode(quiz);
+            updateAccessCodeLabel(accessCodeLabel, accessCode);
+            Notificator.notification(String.format("Ihr neuer Access-Code lautet: %s (gültig für 1 Stunde)", accessCode));
+            startAccessCodeExpirationTimer();
+        });
+
+        startTestQuizButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+        return startTestQuizButton;
     }
 
     private void openQuizCreationDialog() {

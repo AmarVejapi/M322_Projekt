@@ -9,6 +9,7 @@ import com.amar.quizmaster.repositories.QuestionRepository;
 import com.amar.quizmaster.repositories.QuizRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -206,6 +207,7 @@ public class LernQuizView extends VerticalLayout implements HasUrlParameter<Long
                 .setSortable(true);
 
         leaderboardGrid.setWidthFull();
+        leaderboardGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 
         List<Leaderboard> leaderboardData = leaderboardRepository.findTop25ByQuizTitleOrderByScoreDesc(currentQuiz.getTitle());
         if (!leaderboardData.isEmpty()) {

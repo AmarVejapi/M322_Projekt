@@ -10,6 +10,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -121,6 +122,7 @@ public class LernQuizStartView extends VerticalLayout {
                 .setSortable(true);
 
         leaderboardGrid.setWidthFull();
+        leaderboardGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 
         List<Leaderboard> leaderboardData = leaderboardRepository.findTop25ByQuizTitleOrderByScoreDesc(quiz.getTitle());
         if (!leaderboardData.isEmpty()) {
