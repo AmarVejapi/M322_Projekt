@@ -27,6 +27,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     public LoginView(final UserRepository userRepository) {
         this.userRepository = requireNonNull(userRepository);
 
+        getStyle().setBackgroundColor("white");
+
         configureLoginForm();
 
         var loginText = new Span("Noch kein Konto?");
@@ -39,7 +41,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         formLayout.setSpacing(true);
         formLayout.setPadding(true);
         formLayout.setAlignItems(Alignment.CENTER);
-        formLayout.getStyle().setPadding("30px").setBackgroundColor("white").setMinWidth("300px");
+        formLayout.getStyle().setPadding("30px").setMinWidth("300px");
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);

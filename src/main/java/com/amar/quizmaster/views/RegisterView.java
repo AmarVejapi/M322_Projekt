@@ -5,7 +5,7 @@ import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.UserRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -28,7 +28,9 @@ public class RegisterView extends VerticalLayout {
     public RegisterView(final UserRepository userRepository) {
         this.userRepository = requireNonNull(userRepository);
 
-        var title = new H1("Registrieren");
+        getStyle().setBackgroundColor("white");
+
+        var title = new H2("Registrieren");
 
         var usernameField = new TextField("Username");
         usernameField.setWidth("300px");
@@ -63,7 +65,7 @@ public class RegisterView extends VerticalLayout {
         formLayout.setSpacing(true);
         formLayout.setPadding(true);
         formLayout.setAlignItems(Alignment.CENTER);
-        formLayout.getStyle().setPadding("30px").setBackgroundColor("white").setMinWidth("300px");
+        formLayout.getStyle().setPadding("30px").setMinWidth("300px");
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
