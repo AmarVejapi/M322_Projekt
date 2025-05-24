@@ -3,18 +3,12 @@ package com.amar.quizmaster.views;
 import com.amar.quizmaster.model.Role;
 import com.amar.quizmaster.model.User;
 import com.amar.quizmaster.repositories.UserRepository;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
+import com.amar.quizmaster.utils.RegisterForm;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLink;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,75 +19,27 @@ public class RegisterView extends VerticalLayout {
     private final UserRepository userRepository;
 
     @Autowired
-    public RegisterView(final UserRepository userRepository) {
+    public RegisterView(UserRepository userRepository) {
         this.userRepository = requireNonNull(userRepository);
 
         getStyle().setBackgroundColor("white");
 
         var title = new H2("Registrieren");
 
-        var usernameField = new TextField("Username");
-        usernameField.setWidth("300px");
-
-        var passwordField = new PasswordField("Password");
-        passwordField.setWidth("300px");
-
-        var confirmPasswordField = new PasswordField("Passwort wiederholen");
-        confirmPasswordField.setWidth("300px");
-
-        var registerButton = new Button("Registrieren");
-        registerButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        var message = new Span();
-        message.setVisible(false);
-
-        registerButton.addClickListener(event -> registerUser(usernameField, passwordField, confirmPasswordField, message));
-
-        var loginText = new Span("Schon ein Konto?");
-        loginText.getStyle().setMarginRight("5px");
-
-        var formLayout = new VerticalLayout(
-                title,
-                usernameField,
-                passwordField,
-                confirmPasswordField,
-                registerButton,
-                message,
-                new Span(loginText, new RouterLink("Jetzt einloggen!", LoginView.class))
-        );
-
-        formLayout.setSpacing(true);
-        formLayout.setPadding(true);
-        formLayout.setAlignItems(Alignment.CENTER);
-        formLayout.getStyle().setPadding("30px").setMinWidth("300px");
+        var registerForm = new RegisterForm((username, password, messageUpdater) -> {
+            if (userRepository.findByUsername(username).isPresent()) {
+                messageUpdater.updateMessage("Benutzername ist bereits vergeben.", "red");
+            } else {
+                var newUser = new User(username, password, Role.USER);
+                userRepository.save(newUser);
+                messageUpdater.updateMessage("Registrierung erfolgreich! Du kannst dich jetzt einloggen.", "green");
+            }
+        });
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        add(formLayout);
-    }
 
-    @Transactional
-    private void registerUser(TextField usernameField, PasswordField passwordField, PasswordField confirmPasswordField, Span message) {
-        String username = usernameField.getValue();
-        String password = passwordField.getValue();
-        String confirmPassword = confirmPasswordField.getValue();
-
-        if (!password.equals(confirmPassword)) {
-            message.setText("Passwörter stimmen nicht überein.");
-            message.getStyle().setColor("red");
-            message.setVisible(true);
-        } else if (userRepository.findByUsername(username).isPresent()) {
-            message.setText("Benutzername bereits vergeben. Bitte wähle einen anderen.");
-            message.getStyle().setColor("red");
-            message.setVisible(true);
-        } else {
-            var newUser = new User(username, password, Role.USER);
-            userRepository.save(newUser);
-
-            message.setText("Registrierung erfolgreich! Du kannst dich jetzt einloggen.");
-            message.getStyle().setColor("green");
-            message.setVisible(true);
-        }
+        add(title, registerForm);
     }
 }
